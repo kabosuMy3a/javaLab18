@@ -1,23 +1,30 @@
 package edu.handong.csee.java.examples;
 
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
+import java.io.File;
+
+//import org.apache.commons.cli.* ;
+
 
 public class Runner {
 	
 	String path;
+	boolean fullpath;
 	boolean verbose;
 	boolean help;
+	File directory;
 
 	public static void main(String[] args) {
 
 		Runner myRunner = new Runner();
 		myRunner.run(args);
-
+	
 	}
 
 	private void run(String[] args) {
@@ -31,13 +38,28 @@ public class Runner {
 			
 			// path is required (necessary) data so no need to have a branch.
 			System.out.println("You provided \"" + path + "\" as the value of the option p");
-			
+			directory = new File(path);
+			System.out.println("you have "+directory.list().length + " files in path");	
 			// TODO show the number of files in the path
-			
+		
+			if(fullpath){
+				try{
+					System.out.println("full path : "+ directory.getCanonicalPath());
+				   }
+				
+				catch(Exception e){
+					System.out.println(e);
+				}
+
+			}
+
 			if(verbose) {
 				
 				// TODO list all files in the path
-				
+				for (String ver : directory.list()){
+					System.out.print(ver+" ");
+				}
+				System.out.println();
 				System.out.println("Your program is terminated. (This message is shown because you turned on -v option!");
 			}
 		}
@@ -53,6 +75,7 @@ public class Runner {
 			path = cmd.getOptionValue("p");
 			verbose = cmd.hasOption("v");
 			help = cmd.hasOption("h");
+			fullpath = cmd.hasOption("f");
 
 		} catch (Exception e) {
 			printHelp(options);
@@ -72,6 +95,10 @@ public class Runner {
 				.hasArg()
 				.argName("Path name to display")
 				.required()
+				.build());
+
+		options.addOption(Option.builder("f").longOpt("fullpath")
+				.desc("to print out full path of the files in the directory")
 				.build());
 
 		// add options by using OptionBuilder
